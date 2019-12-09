@@ -23,8 +23,13 @@ app.get('/hello', (req, res) => {
   res.send("<html><body>Hello <b>World</b></body></html>\n")
 });
 
+app.get('/urls/new', (req, res) => {
+  res.render('urls_new');
+});
+
 app.get('/urls/:shortURL', (req, res) => {
   let variable = req.params.shortURL;
   let templateVars = { shortURL: variable, longURL: urlDatabase[variable]};
   res.render('urls_show', templateVars);
 });
+
