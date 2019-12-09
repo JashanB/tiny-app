@@ -35,3 +35,16 @@ app.get('/urls/:shortURL', (req, res) => {
   res.render('urls_show', templateVars);
 });
 
+app.post('/urls', (req, res) => {
+  console.log(req.body);
+  res.send('Ok');
+});
+
+function generateRandomString () {
+  let result = '';
+  let chars = '0123456789abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ';
+  for (let i = 0; i < 6; i++) {
+    result += chars[Math.floor(Math.random() * chars.length)];
+  }
+  return result;
+};
