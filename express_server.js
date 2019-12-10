@@ -39,8 +39,8 @@ app.post('/urls', (req, res) => {
 });
 
 app.post('/urls/:shortURL/update', (req, res) => { 
-  let random = generateRandomString();
-  urlDatabase[random] = req.body['longURL'];
+  let variable = req.params.shortURL;
+  urlDatabase[variable] = req.body['longURL'];
   console.log(urlDatabase);
   res.redirect(`/urls`);  
 });

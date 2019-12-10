@@ -28,7 +28,9 @@
           <tr>
             <td><%= url %></td> <!--//making table cell for each thing sent in template vars (urlDatabase)-->
             <td><%= urls[url] %></td> <!--//making cell in same row for long url-->
-            <td><form method="POST" action='/urls/<%=url%>/delete'><button>Delete</button></form></td> <!--//uses url bc template vars sent over object with keys being url and those values equaling long url-->
+            <td><form method="GET" action='/urls/<%=url%>'><button class="btn btn-info">Edit</button>
+            </form></td> 
+            <td><form method="POST" action='/urls/<%=url%>/delete'><button class="btn btn-info">Delete</button></form></td> <!--//uses url bc template vars sent over object with keys being url and those values equaling long url-->
           </tr>
         <% } %>
       </tbody>
