@@ -38,6 +38,13 @@ app.post('/urls', (req, res) => {
   res.redirect(`/urls/${random}`);  
 });
 
+app.post('/urls/:shortURL/update', (req, res) => { 
+  let random = generateRandomString();
+  urlDatabase[random] = req.body['longURL'];
+  console.log(urlDatabase);
+  res.redirect(`/urls`);  
+});
+
 app.get('/urls/:shortURL', (req, res) => {
   let variable = req.params.shortURL;
   let templateVars = { shortURL: variable, longURL: urlDatabase[variable]};
