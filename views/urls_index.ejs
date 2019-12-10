@@ -14,20 +14,21 @@
   </header>
   <main style="margin: 1em;">
     <h3>My URLs</h3>
-    <table class="table"> //creating table 
+    <table class="table"> <!--//creating table--> 
       <thead>
         <tr>
           <th scope="col">Short URL</th>
           <th scope="col">Long URL</th>
+          <th scope="col">Edit</th>
           <th scope="col">Delete</th>
         </tr>
       </thead>
       <tbody>
         <% for(let url in urls) { %>
           <tr>
-            <td><%= url %></td> //making table cell for each thing sent in template vars (urlDatabase)
-            <td><%= urls[url] %></td> //making cell in same row for long url
-            <td><form method="POST" action='/urls/<%=url%>/delete'><button>Delete</button></form></td> //uses url bc template vars sent over object with keys being url and those values equaling long url
+            <td><%= url %></td> <!--//making table cell for each thing sent in template vars (urlDatabase)-->
+            <td><%= urls[url] %></td> <!--//making cell in same row for long url-->
+            <td><form method="POST" action='/urls/<%=url%>/delete'><button>Delete</button></form></td> <!--//uses url bc template vars sent over object with keys being url and those values equaling long url-->
           </tr>
         <% } %>
       </tbody>
