@@ -61,9 +61,15 @@ app.post('/login', (req, res) => {
   res.redirect(`/urls`);  
 });
 
+app.post('/logout', (req, res) => {
+  res.clearCookie('username');
+  console.log('were here')
+  res.redirect(`/urls`);  
+});
+
 app.get('/urls/:shortURL', (req, res) => {
   let variable = req.params.shortURL;
-  let cookie = req.cookies.userName;
+  let cookie = req.cookies.username;
   let templateVars = { shortURL: variable, longURL: urlDatabase[variable], username: cookie};
   res.render('urls_show', templateVars);
 });
@@ -74,7 +80,7 @@ app.get('/u/:shortURL', (req, res) => {
 });
 
 app.get('/urls', (req, res) => {
-  let cookie = req.cookies.userName;
+  let cookie = req.cookies.username;
   let templateVars = {urls: urlDatabase, username: cookie};
   res.render('urls_index', templateVars);
 });
