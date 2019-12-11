@@ -14,12 +14,8 @@
         <p>Logged in as: <%=user.email%></p>
         <form method="POST" action='/logout'><button class="btn btn-primary">Logout</button></form>
         <% } else{ %>
-        <form class="form-inline" action="/login" method="POST"> <!-- form send post method to /urls (action)-->
-          <div class="form-group mb-2">
-            <input class="form-control" type="text" name="username" placeholder=Username style="width: 300px; margin: 1em">
-            <button type="submit" class="btn btn-primary">Submit</button>
-          </div>
-        </form>
+          <a class="btn btn-primary" href="/login" role="button">Login</a>
+          <a class="btn btn-primary" href="/register" role="button">Register</a>
         <% } %>
       </div>
     </div>

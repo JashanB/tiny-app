@@ -100,8 +100,8 @@ app.post('/logout', (req, res) => {
 });
 
 app.post('/register', (req, res) => {
-  let email = req.body.inputEmail;
-  let password = req.body.inputPassword;
+  let email = req.body.registerEmail;
+  let password = req.body.registerPassword;
   let id = generateRandomString();
   if (email === '' || password === '') {
     res.sendStatus(400);
@@ -123,7 +123,7 @@ app.get('/urls/:shortURL', (req, res) => {
   let variable = req.params.shortURL;
   let idName = req.cookies.user_id;
   let objectToSend = users[idName];
-  let templateVars = { shortURL: variable, longURL: urlDatabase[variable], objectToSend};
+  let templateVars = { shortURL: variable, longURL: urlDatabase[variable], user: objectToSend};
   console.log(templateVars)
   res.render('urls_show', templateVars);
 });
@@ -147,6 +147,12 @@ app.get('/register', (req, res) => {
   res.render('urls_register', templateVars);
 });
 
+app.get('/login', (req, res) => {
+  let idName = req.cookies.user_id;
+  let objectToSend = users[idName];
+  let templateVars = {user: objectToSend };
+  res.render('urls_register', templateVars);
+});
 
 
 
