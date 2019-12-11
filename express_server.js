@@ -56,14 +56,6 @@ app.get('/hello', (req, res) => {
   res.send("<html><body>Hello <b>World</b></body></html>\n")
 });
 
-app.get('/urls/new', (req, res) => {
-  let idName = req.cookies.user_id;
-  let objectToSend = users[idName];
-  let templateVars = { user: objectToSend }
-  console.log(templateVars)
-  res.render('urls_new', templateVars);
-});
-
 app.post('/urls/:shortURL/delete', (req, res) => {
   let variable = req.params.shortURL;
   delete urlDatabase[variable];
@@ -86,16 +78,20 @@ app.post('/urls/:shortURL/update', (req, res) => {
 });
 
 app.post('/login', (req, res) => {
-  let username = req.body.username;
-  let templateVars = {username: username};
-  console.log(templateVars);
-  res.cookie('username', username);
+  let email = req.body.registerEmail;
+  let password = req.body.registerPassword;
+  let id = generateRandomString();
+  users[id] = {
+    id: id,
+    email: email,
+    password: password
+  };
+  res.cookie('user_id', users[id].id);
   res.redirect(`/urls`);  
 });
 
 app.post('/logout', (req, res) => {
-  res.clearCookie('username');
-  console.log('were here')
+  res.clearCookie('user_id');
   res.redirect(`/urls`);  
 });
 
@@ -119,6 +115,19 @@ app.post('/register', (req, res) => {
   }
 });
 
+app.get('/u/:shortURL', (req, res) => {
+  let variable = req.params.shortURL;
+  res.redirect(urlDatabase[variable]);
+});
+
+app.get('/urls/new', (req, res) => {
+  let idName = req.cookies.user_id;
+  let objectToSend = users[idName];
+  let templateVars = { user: objectToSend }
+  console.log(templateVars)
+  res.render('urls_new', templateVars);
+});
+
 app.get('/urls/:shortURL', (req, res) => {
   let variable = req.params.shortURL;
   let idName = req.cookies.user_id;
@@ -126,11 +135,6 @@ app.get('/urls/:shortURL', (req, res) => {
   let templateVars = { shortURL: variable, longURL: urlDatabase[variable], user: objectToSend};
   console.log(templateVars)
   res.render('urls_show', templateVars);
-});
-
-app.get('/u/:shortURL', (req, res) => {
-  let variable = req.params.shortURL;
-  res.redirect(urlDatabase[variable]);
 });
 
 app.get('/urls', (req, res) => {
@@ -151,7 +155,7 @@ app.get('/login', (req, res) => {
   let idName = req.cookies.user_id;
   let objectToSend = users[idName];
   let templateVars = {user: objectToSend };
-  res.render('urls_register', templateVars);
+  res.render('urls_login', templateVars);
 });
 
 
