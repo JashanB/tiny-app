@@ -26,8 +26,8 @@ const users = {
 };
 
 function isEmailRepeated(input) {
-  for (let user in users) {
-    if (user.email === input) {
+  for (let user of Object.keys(users)) {
+    if (users[user].email === input) {
       console.log('true')
       return true;
     }
@@ -44,7 +44,6 @@ function generateRandomString () {
   return result;
 };
 
-
 app.get('/', (req, res) => {
   res.send('Hello');
 });
@@ -58,10 +57,10 @@ app.get('/hello', (req, res) => {
 });
 
 app.get('/urls/new', (req, res) => {
-  let cookie = req.cookies.username;
-  //console.log(user)
-  let templateVars = {username: cookie};
-  console.log(cookie);
+  let idName = req.cookies.user_id;
+  let objectToSend = users[idName];
+  let templateVars = { user: objectToSend }
+  console.log(templateVars)
   res.render('urls_new', templateVars);
 });
 
@@ -115,15 +114,17 @@ app.post('/register', (req, res) => {
       password: password
     };
     console.log(users)
-    res.cookie('user_id', users[id]);
+    res.cookie('user_id', users[id].id);
     res.redirect('/urls');
   }
 });
 
 app.get('/urls/:shortURL', (req, res) => {
   let variable = req.params.shortURL;
-  let cookie = req.cookies.username;
-  let templateVars = { shortURL: variable, longURL: urlDatabase[variable], username: cookie};
+  let idName = req.cookies.user_id;
+  let objectToSend = users[idName];
+  let templateVars = { shortURL: variable, longURL: urlDatabase[variable], objectToSend};
+  console.log(templateVars)
   res.render('urls_show', templateVars);
 });
 
@@ -133,13 +134,17 @@ app.get('/u/:shortURL', (req, res) => {
 });
 
 app.get('/urls', (req, res) => {
-  let cookie = req.cookies.username;
-  let templateVars = {urls: urlDatabase, username: cookie};
+  let idName = req.cookies.user_id;
+  let objectToSend = users[idName];
+  let templateVars = {urls: urlDatabase, user: objectToSend};
   res.render('urls_index', templateVars);
 });
 
 app.get('/register', (req, res) => {
-  res.render('urls_register')
+  let idName = req.cookies.user_id;
+  let objectToSend = users[idName];
+  let templateVars = {user: objectToSend };
+  res.render('urls_register', templateVars);
 });
 
 
