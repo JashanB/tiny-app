@@ -11,6 +11,40 @@ const urlDatabase = {
   "b2xVn2": "http://www.lighthouselabs.ca",
   "9sm5xK": "http://www.google.com"
 };
+
+const users = { 
+  "userRandomID": {
+    id: "userRandomID", 
+    email: "user@example.com", 
+    password: "purple-monkey-dinosaur"
+  },
+ "user2RandomID": {
+    id: "user2RandomID", 
+    email: "user2@example.com", 
+    password: "dishwasher-funk"
+  }
+};
+
+function isEmailRepeated(input) {
+  for (let user in users) {
+    if (user.email === input) {
+      console.log('true')
+      return true;
+    }
+  }
+  return false;
+};
+
+function generateRandomString () {
+  let result = '';
+  let chars = '0123456789abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ';
+  for (let i = 0; i < 6; i++) {
+    result += chars[Math.floor(Math.random() * chars.length)];
+  }
+  return result;
+};
+
+
 app.get('/', (req, res) => {
   res.send('Hello');
 });
@@ -24,7 +58,7 @@ app.get('/hello', (req, res) => {
 });
 
 app.get('/urls/new', (req, res) => {
-  let cookie = req.cookies.userName;
+  let cookie = req.cookies.username;
   //console.log(user)
   let templateVars = {username: cookie};
   console.log(cookie);
@@ -53,11 +87,10 @@ app.post('/urls/:shortURL/update', (req, res) => {
 });
 
 app.post('/login', (req, res) => {
-  let userName = req.body.username;
-  console.log(userName);
-  let templateVars = {username: userName};
+  let username = req.body.username;
+  let templateVars = {username: username};
   console.log(templateVars);
-  res.cookie('username', userName);
+  res.cookie('username', username);
   res.redirect(`/urls`);  
 });
 
@@ -65,6 +98,26 @@ app.post('/logout', (req, res) => {
   res.clearCookie('username');
   console.log('were here')
   res.redirect(`/urls`);  
+});
+
+app.post('/register', (req, res) => {
+  let email = req.body.inputEmail;
+  let password = req.body.inputPassword;
+  let id = generateRandomString();
+  if (email === '' || password === '') {
+    res.sendStatus(400);
+  } else if (isEmailRepeated(email) === true) {
+    res.sendStatus(400);
+  } else {
+    users[id] = {
+      id: id,
+      email: email,
+      password: password
+    };
+    console.log(users)
+    res.cookie('user_id', users[id]);
+    res.redirect('/urls');
+  }
 });
 
 app.get('/urls/:shortURL', (req, res) => {
@@ -85,14 +138,10 @@ app.get('/urls', (req, res) => {
   res.render('urls_index', templateVars);
 });
 
-function generateRandomString () {
-  let result = '';
-  let chars = '0123456789abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ';
-  for (let i = 0; i < 6; i++) {
-    result += chars[Math.floor(Math.random() * chars.length)];
-  }
-  return result;
-};
+app.get('/register', (req, res) => {
+  res.render('urls_register')
+});
+
 
 
 
