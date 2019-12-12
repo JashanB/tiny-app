@@ -57,6 +57,16 @@ function urlsForUser(id) {
   return object;
 };
 
+const getUserByEmail = function(email, database) {
+  let user;
+  for (let key of Object.keys(database)) {
+    if (database[key].email === email) {
+      user = database[key];
+    }
+  }
+  return user;
+};
+
 app.listen(PORT, () => {
   console.log(`Example app is listening on ${PORT}!`)
 });
@@ -103,21 +113,19 @@ app.post('/urls/:shortURL/update', (req, res) => {
 app.post('/login', (req, res) => {
   let eEmail = req.body.loginEmail;
   let pPassword = req.body.loginPassword;
-  let verify;
   let hashed = 'b';
   if (isEmailRepeated(eEmail) === false) {
     return res.status(400).send('403 email is already in use');
   }
-  for (let user of Object.keys(users)) {
-    if (users[user].email === eEmail) {
-      verify = user;
-      hashed = users[verify].password;
-    }
-  };
+  let user = getUserByEmail(eEmail, users);
+  let verifiedEmail = user.email;
+  if (verifiedEmail !== undefined) {
+    hashed = user.password;
+  }
   if (bcrypt.compareSync(pPassword, hashed) === false) {
     res.status(403).send('403 password does not match');
   } else {
-    req.session.user_id = users[verify].id;
+    req.session.user_id = user.id;
     res.redirect(`/urls`);
   }
 });
