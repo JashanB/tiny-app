@@ -68,9 +68,9 @@ app.post('/urls/:shortURL/delete', (req, res) => {
     delete urlDatabase[variable];
     res.redirect('/urls');
   } else if (idName === undefined) {
-    res.sendStatus(400).send('400 user not logged in');
+    res.status(400).send('400 user not logged in');
   } else if (urlDatabase[variable].userID !== idName) {
-    res.sendStatus(400).send('user does not have access to this url');
+    res.status(400).send('user does not have access to this url');
   }
 });
 
@@ -79,7 +79,7 @@ app.post('/urls', (req, res) => {
   let idName = req.session.user_id;
   let long = req.body['longURL'];
   if (idName === undefined) {
-    res.sendStatus(400).send('400 user not logged in');
+    res.status(400).send('400 user not logged in');
   } else {
     urlDatabase[random] = { longURL: long, userID: idName };
     res.redirect(`/urls/${random}`);
@@ -94,9 +94,9 @@ app.post('/urls/:shortURL/update', (req, res) => {
     urlDatabase[variable] = { longURL: long, userID: idName };
     res.redirect(`/urls`);
   } else if (idName === undefined) {
-    res.sendStatus(400).send('400 user not logged in');
+    res.status(400).send('400 user not logged in');
   } else if (urlDatabase[variable].userID !== idName) {
-    res.sendStatus(400).send('400 User does not have access to this URL');
+    res.status(400).send('400 User does not have access to this URL');
   } 
 });
 
@@ -106,7 +106,7 @@ app.post('/login', (req, res) => {
   let verify;
   let hashed = 'b';
   if (isEmailRepeated(eEmail) === false) {
-    return res.sendStatus(403).send('403 email is already in use');
+    return res.status(400).send('403 email is already in use');
   }
   for (let user of Object.keys(users)) {
     if (users[user].email === eEmail) {
@@ -115,7 +115,7 @@ app.post('/login', (req, res) => {
     }
   };
   if (bcrypt.compareSync(pPassword, hashed) === false) {
-    res.sendStatus(403).send('403 password does not match');
+    res.status(403).send('403 password does not match');
   } else {
     req.session.user_id = users[verify].id;
     res.redirect(`/urls`);
@@ -133,9 +133,9 @@ app.post('/register', (req, res) => {
   let hashed = bcrypt.hashSync(password, 10);
   let id = generateRandomString();
   if (email === '' || password === '') {
-    res.sendStatus(400).send('400 email or password fields empty');
+    res.status(400).send('400 email or password fields empty')
   } else if (isEmailRepeated(email) === true) {
-    res.sendStatus(400).send('400 email already exists');
+    res.status(400).send('400 email already exists')
   } else {
     users[id] = {
       id: id,
@@ -150,9 +150,9 @@ app.post('/register', (req, res) => {
 app.get('/u/:shortURL', (req, res) => {
   let variable = req.params.shortURL;
   if (urlDatabase[variable] === undefined) {
-    res.sendStatus(400).send('400 URL for given ID does not exist');
+    res.status(400).send('400 URL for given ID does not exist');
   } else if (urlDatabase[variable].longURL === '') {
-    res.sendStatus(400).send('400 URL was not inputed');
+    res.status(400).send('400 URL was not inputed');
   } else {
     res.redirect(urlDatabase[variable].longURL);
   }
@@ -174,9 +174,9 @@ app.get('/urls/:shortURL', (req, res) => {
   let idName = req.session.user_id;
   let objectToSend = users[idName];
   if (idName === undefined) {
-    res.sendStatus(400).send('400 User not logged in');
+    res.status(400).send('400 User not logged in');
   } else if (idName !== urlDatabase[variable].userID) {
-    res.sendStatus(400).send('400 URL for given ID does not exist');
+    res.status(400).send('400 URL for given ID does not exist');
   } else {
     let templateVars = { shortURL: variable, longURL: urlDatabase[variable].longURL, user: objectToSend };
     res.render('urls_show', templateVars);
