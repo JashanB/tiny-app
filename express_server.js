@@ -70,10 +70,6 @@ app.listen(PORT, () => {
   console.log(`Example app is listening on ${PORT}!`)
 });
 
-app.get('/hello', (req, res) => {
-  res.send("<html><body>Hello <b>World</b></body></html>\n")
-});
-
 app.post('/urls/:shortURL/delete', (req, res) => {
   let variable = req.params.shortURL;
   let idName = req.session.user_id;
@@ -108,23 +104,24 @@ app.post('/login', (req, res) => {
   let eEmail = req.body.loginEmail;
   let pPassword = req.body.loginPassword;
   let verify;
+  let hashed = 'b';
   if (isEmailRepeated(eEmail) === false) {
-    res.sendStatus(403);
+    return res.sendStatus(403);
   }
   for (let user of Object.keys(users)) {
     if (users[user].email === eEmail) {
-      verify = user
+      verify = user;
+      hashed = users[verify].password;
     }
   };
   //console.log(verify);
   //console.log(users[verify].password)
-  let hashed = users[verify].password;
   if (bcrypt.compareSync(pPassword, hashed) === false) {
     res.sendStatus(403);
   } else {
     req.session.user_id = users[verify].id;
+    res.redirect(`/urls`);
   }
-  res.redirect(`/urls`);
 });
 
 app.post('/logout', (req, res) => {
@@ -155,14 +152,21 @@ app.post('/register', (req, res) => {
 
 app.get('/u/:shortURL', (req, res) => {
   let variable = req.params.shortURL;
-  res.redirect(urlDatabase[variable].longURL);
+  //console.log(urlDatabase[variable].longURL)
+  if (urlDatabase[variable] === undefined) {
+    res.sendStatus(403);
+  } else if (urlDatabase[variable].longURL === '') {
+    res.sendStatus(403);
+  } else {
+    res.redirect(urlDatabase[variable].longURL);
+  }
 });
 
 app.get('/urls/new', (req, res) => {
   let idName = req.session.user_id;
   let objectToSend = users[idName];
   let templateVars = { user: objectToSend }
-  console.log(idName);
+  // console.log(idName);
   if (idName === undefined) {
     res.redirect('/login');
   } else {
@@ -185,8 +189,13 @@ app.get('/urls', (req, res) => {
   let objectWithURLs = urlsForUser(idName);
   //console.log(objectWithURLs)
   let templateVars = { urls: objectWithURLs, user: objectToSend };
+  console.log(idName)
   //console.log(templateVars)
-  res.render('urls_index', templateVars);
+  if (idName === undefined) {
+    res.redirect('/login');
+  } else {
+    res.render('urls_index', templateVars);
+  }
 });
 
 app.get('/register', (req, res) => {
