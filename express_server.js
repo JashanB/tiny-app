@@ -5,6 +5,7 @@ const bcrypt = require('bcrypt');
 app.set('view engine', 'ejs');
 const bodyParser = require("body-parser");
 const cookieSession = require('cookie-session');
+const getUserByEmail = require('./helper');
 app.use(cookieSession({
   name: 'session',
   keys: ['user_id']
@@ -57,15 +58,15 @@ function urlsForUser(id) {
   return object;
 };
 
-const getUserByEmail = function(email, database) {
-  let user;
-  for (let key of Object.keys(database)) {
-    if (database[key].email === email) {
-      user = database[key];
-    }
-  }
-  return user;
-};
+// const getUserByEmail = function(email, database) {
+//   let user;
+//   for (let key of Object.keys(database)) {
+//     if (database[key].email === email) {
+//       user = database[key];
+//     }
+//   }
+//   return user;
+// };
 
 app.listen(PORT, () => {
   console.log(`Example app is listening on ${PORT}!`)
