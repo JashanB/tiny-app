@@ -58,7 +58,12 @@ function urlsForUser(id) {
 };
 
 app.get('/', (req, res) => {
-  res.send('Hello');
+  let idName = req.session.user_id;
+  if (idName === undefined) {
+    res.redirect('/login');
+  } else {
+    res.redirect('/urls');
+  }
 });
 
 app.listen(PORT, () => {
@@ -75,7 +80,7 @@ app.post('/urls/:shortURL/delete', (req, res) => {
   if (idName === urlDatabase[variable].userID) {
     delete urlDatabase[variable];
   }
-  console.log(urlDatabase);
+  //console.log(urlDatabase);
   res.redirect('/urls');
 });
 
@@ -84,7 +89,7 @@ app.post('/urls', (req, res) => {
   let idName = req.session.user_id;
   let long = req.body['longURL'];
   urlDatabase[random] = { longURL: long, userID: idName };
-  console.log(urlDatabase);
+  //console.log(urlDatabase);
   res.redirect(`/urls/${random}`);
 });
 
@@ -95,7 +100,7 @@ app.post('/urls/:shortURL/update', (req, res) => {
   if (idName === urlDatabase[variable].userID) {
     urlDatabase[variable] = { longURL: long, userID: idName };
   }
-  console.log(urlDatabase);
+  //console.log(urlDatabase);
   res.redirect(`/urls`);
 });
 
@@ -111,8 +116,8 @@ app.post('/login', (req, res) => {
       verify = user
     }
   };
-  console.log(verify);
-  console.log(users[verify].password)
+  //console.log(verify);
+  //console.log(users[verify].password)
   let hashed = users[verify].password;
   if (bcrypt.compareSync(pPassword, hashed) === false) {
     res.sendStatus(403);
@@ -142,7 +147,7 @@ app.post('/register', (req, res) => {
       email: email,
       password: hashed
     };
-    console.log(users)
+    //console.log(users)
     req.session.user_id = users[id].id;
     res.redirect('/urls');
   }
@@ -157,6 +162,7 @@ app.get('/urls/new', (req, res) => {
   let idName = req.session.user_id;
   let objectToSend = users[idName];
   let templateVars = { user: objectToSend }
+  console.log(idName);
   if (idName === undefined) {
     res.redirect('/login');
   } else {
@@ -169,7 +175,7 @@ app.get('/urls/:shortURL', (req, res) => {
   let idName = req.session.user_id;
   let objectToSend = users[idName];
   let templateVars = { shortURL: variable, longURL: urlDatabase[variable].longURL, user: objectToSend };
-  console.log(templateVars)
+  //console.log(templateVars)
   res.render('urls_show', templateVars);
 });
 
@@ -177,9 +183,9 @@ app.get('/urls', (req, res) => {
   let idName = req.session.user_id;
   let objectToSend = users[idName];
   let objectWithURLs = urlsForUser(idName);
-  console.log(objectWithURLs)
+  //console.log(objectWithURLs)
   let templateVars = { urls: objectWithURLs, user: objectToSend };
-  console.log(templateVars)
+  //console.log(templateVars)
   res.render('urls_index', templateVars);
 });
 
