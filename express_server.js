@@ -5,22 +5,22 @@ app.set('view engine', 'ejs');
 const bodyParser = require("body-parser");
 const cookieParser = require('cookie-parser');
 app.use(cookieParser());
-app.use(bodyParser.urlencoded({extended: true}));
+app.use(bodyParser.urlencoded({ extended: true }));
 
 const urlDatabase = {
   b6UTxQ: { longURL: "https://www.tsn.ca", userID: "ex1" },
   i3BoGr: { longURL: "https://www.google.ca", userID: "ex2" }
 };
 
-const users = { 
+const users = {
   "userRandomID": {
-    id: "userRandomID", 
-    email: "user@example.com", 
+    id: "userRandomID",
+    email: "user@example.com",
     password: "purple-monkey-dinosaur"
   },
- "user2RandomID": {
-    id: "user2RandomID", 
-    email: "user2@example.com", 
+  "user2RandomID": {
+    id: "user2RandomID",
+    email: "user2@example.com",
     password: "dishwasher-funk"
   }
 };
@@ -34,13 +34,23 @@ function isEmailRepeated(input) {
   return false;
 };
 
-function generateRandomString () {
+function generateRandomString() {
   let result = '';
   let chars = '0123456789abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ';
   for (let i = 0; i < 6; i++) {
     result += chars[Math.floor(Math.random() * chars.length)];
   }
   return result;
+};
+
+function urlsForUser(id) {
+  let object = {};
+  for (let key of Object.keys(urlDatabase)) {
+    if (urlDatabase[key].userID === id) {
+      object[key] = {longURL: urlDatabase[key].longURL, userID: id}
+    }
+  }
+  return object;
 };
 
 app.get('/', (req, res) => {
@@ -57,27 +67,32 @@ app.get('/hello', (req, res) => {
 
 app.post('/urls/:shortURL/delete', (req, res) => {
   let variable = req.params.shortURL;
-  delete urlDatabase[variable];
+  let idName = req.cookies.user_id;
+  if (idName === urlDatabase[variable].userID) {
+    delete urlDatabase[variable];
+  }
   console.log(urlDatabase);
   res.redirect('/urls');
 });
 
-app.post('/urls', (req, res) => { 
+app.post('/urls', (req, res) => {
   let random = generateRandomString();
   let idName = req.cookies.user_id;
   let long = req.body['longURL'];
-  urlDatabase[random] = {longURL: long, userID: idName};
+  urlDatabase[random] = { longURL: long, userID: idName };
   console.log(urlDatabase);
-  res.redirect(`/urls/${random}`);  
+  res.redirect(`/urls/${random}`);
 });
 
-app.post('/urls/:shortURL/update', (req, res) => { 
+app.post('/urls/:shortURL/update', (req, res) => {
   let variable = req.params.shortURL;
   let long = req.body['longURL'];
   let idName = req.cookies.user_id;
-  urlDatabase[variable] = {longURL: long, userID: idName};
+  if (idName === urlDatabase[variable].userID) {
+    urlDatabase[variable] = { longURL: long, userID: idName };
+  }
   console.log(urlDatabase);
-  res.redirect(`/urls`);  
+  res.redirect(`/urls`);
 });
 
 app.post('/login', (req, res) => {
@@ -86,7 +101,7 @@ app.post('/login', (req, res) => {
   let verify;
   if (isEmailRepeated(eEmail) === false) {
     res.sendStatus(403);
-  } 
+  }
   for (let user of Object.keys(users)) {
     if (users[user].email === eEmail) {
       verify = user
@@ -99,12 +114,12 @@ app.post('/login', (req, res) => {
   } else {
     res.cookie('user_id', users[verify].id);
   }
-  res.redirect(`/urls`);  
+  res.redirect(`/urls`);
 });
 
 app.post('/logout', (req, res) => {
   res.clearCookie('user_id');
-  res.redirect(`/urls`);  
+  res.redirect(`/urls`);
 });
 
 app.post('/register', (req, res) => {
@@ -147,7 +162,7 @@ app.get('/urls/:shortURL', (req, res) => {
   let variable = req.params.shortURL;
   let idName = req.cookies.user_id;
   let objectToSend = users[idName];
-  let templateVars = { shortURL: variable, longURL: urlDatabase[variable].longURL, user: objectToSend};
+  let templateVars = { shortURL: variable, longURL: urlDatabase[variable].longURL, user: objectToSend };
   console.log(templateVars)
   res.render('urls_show', templateVars);
 });
@@ -155,8 +170,9 @@ app.get('/urls/:shortURL', (req, res) => {
 app.get('/urls', (req, res) => {
   let idName = req.cookies.user_id;
   let objectToSend = users[idName];
-  
-  let templateVars = {urls: urlDatabase, user: objectToSend};
+  let objectWithURLs = urlsForUser(idName);
+  console.log(objectWithURLs)
+  let templateVars = { urls: objectWithURLs, user: objectToSend };
   console.log(templateVars)
   res.render('urls_index', templateVars);
 });
@@ -164,14 +180,14 @@ app.get('/urls', (req, res) => {
 app.get('/register', (req, res) => {
   let idName = req.cookies.user_id;
   let objectToSend = users[idName];
-  let templateVars = {user: objectToSend };
+  let templateVars = { user: objectToSend };
   res.render('urls_register', templateVars);
 });
 
 app.get('/login', (req, res) => {
   let idName = req.cookies.user_id;
   let objectToSend = users[idName];
-  let templateVars = {user: objectToSend };
+  let templateVars = { user: objectToSend };
   res.render('urls_login', templateVars);
 });
 
