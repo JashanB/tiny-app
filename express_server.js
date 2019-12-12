@@ -28,7 +28,6 @@ const users = {
 function isEmailRepeated(input) {
   for (let user of Object.keys(users)) {
     if (users[user].email === input) {
-      console.log('true')
       return true;
     }
   }
@@ -78,15 +77,24 @@ app.post('/urls/:shortURL/update', (req, res) => {
 });
 
 app.post('/login', (req, res) => {
-  let email = req.body.registerEmail;
-  let password = req.body.registerPassword;
-  let id = generateRandomString();
-  users[id] = {
-    id: id,
-    email: email,
-    password: password
+  let eEmail = req.body.loginEmail;
+  let pPassword = req.body.loginPassword;
+  let verify;
+  if (isEmailRepeated(eEmail) === false) {
+    res.sendStatus(403);
+  } 
+  for (let user of Object.keys(users)) {
+    if (users[user].email === eEmail) {
+      verify = user
+    }
   };
-  res.cookie('user_id', users[id].id);
+  console.log(verify);
+  console.log(users[verify].password)
+  if (users[verify].password !== pPassword) {
+    res.sendStatus(403);
+  } else {
+    res.cookie('user_id', users[verify].id);
+  }
   res.redirect(`/urls`);  
 });
 
