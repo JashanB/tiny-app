@@ -154,9 +154,9 @@ app.get('/u/:shortURL', (req, res) => {
   let variable = req.params.shortURL;
   //console.log(urlDatabase[variable].longURL)
   if (urlDatabase[variable] === undefined) {
-    res.sendStatus(403);
+    res.sendStatus(404);
   } else if (urlDatabase[variable].longURL === '') {
-    res.sendStatus(403);
+    res.sendStatus(404);
   } else {
     res.redirect(urlDatabase[variable].longURL);
   }
@@ -180,7 +180,11 @@ app.get('/urls/:shortURL', (req, res) => {
   let objectToSend = users[idName];
   let templateVars = { shortURL: variable, longURL: urlDatabase[variable].longURL, user: objectToSend };
   //console.log(templateVars)
-  res.render('urls_show', templateVars);
+  if (idName !== urlDatabase[variable].userID) {
+    res.sendStatus(404);
+  } else {
+    res.render('urls_show', templateVars);
+  }
 });
 
 app.get('/urls', (req, res) => {
