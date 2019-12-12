@@ -8,8 +8,8 @@ app.use(cookieParser());
 app.use(bodyParser.urlencoded({extended: true}));
 
 const urlDatabase = {
-  "b2xVn2": "http://www.lighthouselabs.ca",
-  "9sm5xK": "http://www.google.com"
+  b6UTxQ: { longURL: "https://www.tsn.ca", userID: "ex1" },
+  i3BoGr: { longURL: "https://www.google.ca", userID: "ex2" }
 };
 
 const users = { 
@@ -64,14 +64,18 @@ app.post('/urls/:shortURL/delete', (req, res) => {
 
 app.post('/urls', (req, res) => { 
   let random = generateRandomString();
-  urlDatabase[random] = req.body['longURL'];
+  let idName = req.cookies.user_id;
+  let long = req.body['longURL'];
+  urlDatabase[random] = {longURL: long, userID: idName};
   console.log(urlDatabase);
   res.redirect(`/urls/${random}`);  
 });
 
 app.post('/urls/:shortURL/update', (req, res) => { 
   let variable = req.params.shortURL;
-  urlDatabase[variable] = req.body['longURL'];
+  let long = req.body['longURL'];
+  let idName = req.cookies.user_id;
+  urlDatabase[variable] = {longURL: long, userID: idName};
   console.log(urlDatabase);
   res.redirect(`/urls`);  
 });
@@ -125,22 +129,25 @@ app.post('/register', (req, res) => {
 
 app.get('/u/:shortURL', (req, res) => {
   let variable = req.params.shortURL;
-  res.redirect(urlDatabase[variable]);
+  res.redirect(urlDatabase[variable].longURL);
 });
 
 app.get('/urls/new', (req, res) => {
   let idName = req.cookies.user_id;
   let objectToSend = users[idName];
   let templateVars = { user: objectToSend }
-  console.log(templateVars)
-  res.render('urls_new', templateVars);
+  if (idName === undefined) {
+    res.redirect('/login');
+  } else {
+    res.render('urls_new', templateVars);
+  }
 });
 
 app.get('/urls/:shortURL', (req, res) => {
   let variable = req.params.shortURL;
   let idName = req.cookies.user_id;
   let objectToSend = users[idName];
-  let templateVars = { shortURL: variable, longURL: urlDatabase[variable], user: objectToSend};
+  let templateVars = { shortURL: variable, longURL: urlDatabase[variable].longURL, user: objectToSend};
   console.log(templateVars)
   res.render('urls_show', templateVars);
 });
@@ -148,7 +155,9 @@ app.get('/urls/:shortURL', (req, res) => {
 app.get('/urls', (req, res) => {
   let idName = req.cookies.user_id;
   let objectToSend = users[idName];
+  
   let templateVars = {urls: urlDatabase, user: objectToSend};
+  console.log(templateVars)
   res.render('urls_index', templateVars);
 });
 
