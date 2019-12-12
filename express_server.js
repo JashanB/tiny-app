@@ -215,7 +215,11 @@ app.get('/register', (req, res) => {
   let idName = req.session.user_id;
   let objectToSend = users[idName];
   let templateVars = { user: objectToSend };
-  res.render('urls_register', templateVars);
+  if (idName === undefined) {
+    res.render('urls_register', templateVars);
+  } else{
+    res.redirect('/urls');
+  }
 });
 
 app.get('/login', (req, res) => {
