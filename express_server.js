@@ -75,18 +75,24 @@ app.post('/urls/:shortURL/delete', (req, res) => {
   let idName = req.session.user_id;
   if (idName === urlDatabase[variable].userID) {
     delete urlDatabase[variable];
+    res.redirect('/urls');
+  } else if (urlDatabase[variable].userID !== idName) {
+    res.sendStatus(404);
+  } else if (idName === undefined) {
+    res.sendStatus(404);
   }
-  //console.log(urlDatabase);
-  res.redirect('/urls');
 });
 
 app.post('/urls', (req, res) => {
   let random = generateRandomString();
   let idName = req.session.user_id;
   let long = req.body['longURL'];
-  urlDatabase[random] = { longURL: long, userID: idName };
-  //console.log(urlDatabase);
-  res.redirect(`/urls/${random}`);
+  if (idName === undefined) {
+    res.sendStatus(404);
+  } else {
+    urlDatabase[random] = { longURL: long, userID: idName };
+    res.redirect(`/urls/${random}`);
+  }
 });
 
 app.post('/urls/:shortURL/update', (req, res) => {
@@ -95,9 +101,12 @@ app.post('/urls/:shortURL/update', (req, res) => {
   let idName = req.session.user_id;
   if (idName === urlDatabase[variable].userID) {
     urlDatabase[variable] = { longURL: long, userID: idName };
+    res.redirect(`/urls`);
+  } else if (urlDatabase[variable].userID !== idName) {
+    res.sendStatus(404);
+  } else if (idName === undefined) {
+    res.sendStatus(404);
   }
-  //console.log(urlDatabase);
-  res.redirect(`/urls`);
 });
 
 app.post('/login', (req, res) => {
@@ -213,7 +222,11 @@ app.get('/login', (req, res) => {
   let idName = req.session.user_id;
   let objectToSend = users[idName];
   let templateVars = { user: objectToSend };
-  res.render('urls_login', templateVars);
+  if (idName === undefined) {
+    res.render('urls_login', templateVars);
+  } else{
+    res.redirect('/urls');
+  }
 });
 
 
