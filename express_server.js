@@ -37,7 +37,7 @@ function isEmailRepeated(input) {
     }
   }
   return false;
-};
+}
 
 function generateRandomString() {
   let result = '';
@@ -46,17 +46,17 @@ function generateRandomString() {
     result += chars[Math.floor(Math.random() * chars.length)];
   }
   return result;
-};
+}
 
 function urlsForUser(id) {
   let object = {};
   for (let key of Object.keys(urlDatabase)) {
     if (urlDatabase[key].userID === id) {
-      object[key] = {longURL: urlDatabase[key].longURL, userID: id}
+      object[key] = {longURL: urlDatabase[key].longURL, userID: id};
     }
   }
   return object;
-};
+}
 
 // const getUserByEmail = function(email, database) {
 //   let user;
@@ -69,7 +69,7 @@ function urlsForUser(id) {
 // };
 
 app.listen(PORT, () => {
-  console.log(`Example app is listening on ${PORT}!`)
+  console.log(`Example app is listening on ${PORT}!`);
 });
 
 app.post('/urls/:shortURL/delete', (req, res) => {
@@ -108,7 +108,7 @@ app.post('/urls/:shortURL/update', (req, res) => {
     res.status(400).send('400 user not logged in');
   } else if (urlDatabase[variable].userID !== idName) {
     res.status(400).send('400 User does not have access to this URL');
-  } 
+  }
 });
 
 app.post('/login', (req, res) => {
@@ -116,7 +116,7 @@ app.post('/login', (req, res) => {
   let pPassword = req.body.loginPassword;
   let hashed = 'b';
   if (isEmailRepeated(eEmail) === false) {
-    return res.status(400).send('403 email is already in use');
+    return res.status(403).send('403 email not registered');
   }
   let user = getUserByEmail(eEmail, users);
   let verifiedEmail = user.email;
@@ -142,9 +142,9 @@ app.post('/register', (req, res) => {
   let hashed = bcrypt.hashSync(password, 10);
   let id = generateRandomString();
   if (email === '' || password === '') {
-    res.status(400).send('400 email or password fields empty')
+    res.status(400).send('400 email or password fields empty');
   } else if (isEmailRepeated(email) === true) {
-    res.status(400).send('400 email already exists')
+    res.status(400).send('400 email already exists');
   } else {
     users[id] = {
       id: id,
@@ -170,7 +170,7 @@ app.get('/u/:shortURL', (req, res) => {
 app.get('/urls/new', (req, res) => {
   let idName = req.session.user_id;
   let objectToSend = users[idName];
-  let templateVars = { user: objectToSend }
+  let templateVars = { user: objectToSend };
   if (idName === undefined) {
     res.redirect('/login');
   } else {
@@ -210,7 +210,7 @@ app.get('/register', (req, res) => {
   let templateVars = { user: objectToSend };
   if (idName === undefined) {
     res.render('urls_register', templateVars);
-  } else{
+  } else {
     res.redirect('/urls');
   }
 });
@@ -221,7 +221,7 @@ app.get('/login', (req, res) => {
   let templateVars = { user: objectToSend };
   if (idName === undefined) {
     res.render('urls_login', templateVars);
-  } else{
+  } else {
     res.redirect('/urls');
   }
 });

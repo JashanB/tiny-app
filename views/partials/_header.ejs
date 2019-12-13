@@ -14,8 +14,10 @@
         <p>Logged in as: <%=user.email%></p>
         <form method="POST" action='/logout'><button class="btn btn-primary">Logout</button></form>
         <% } else{ %>
-          <a class="btn btn-primary" href="/login" role="button">Login</a>
-          <a class="btn btn-primary" href="/register" role="button">Register</a>
+          <div class ="float-right">
+            <a class="btn btn-primary" href="/login" role="button">Login</a>
+            <a class="btn btn-primary" href="/register" role="button">Register</a>
+          </div>
         <% } %>
       </div>
     </div>
